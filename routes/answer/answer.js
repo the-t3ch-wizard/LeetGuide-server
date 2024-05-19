@@ -1,4 +1,3 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
@@ -18,7 +17,7 @@ answer.post('/getHintsByDetails', async (req, res) => {
         {
           "parts": [
             {
-              "text": `Act as a DSA mentor and provide me 3 hints about question and its details are as follows ${questionDetails.details}. Strictly follow the given template and do not answer in markdown. Provide 3 hints which range from a little bit understanding to full understanding . The first hint should help a little , the second one should help more and the third one should help very much. Always provide hints in laymen terms   Provide detailed response
+              "text": `Act as a DSA mentor and provide me 3 hints about question and its details are as follows ${questionDetails.details}. Provide 3 hints which range from a little bit understanding to full understanding . The first hint should help a little , the second one should help more and the third one should help very much. Strictly follow the given template and do not answer in markdown.
               {
                 "hint1":"",
                 "hint2":"",
@@ -44,7 +43,7 @@ answer.post('/getHintsByDetails', async (req, res) => {
     
     axios.request(config)
     .then((response) => {
-      if (response.data.candidates[0]){
+      if (response.data.candidates[0].content.parts[0].text){
         const allHints = JSON.parse(response.data.candidates[0].content.parts[0].text);
         hints.push(allHints.hint1)
         hints.push(allHints.hint2)
@@ -55,7 +54,9 @@ answer.post('/getHintsByDetails', async (req, res) => {
     })
     .catch((error) => {
       console.log(error);
-      throw Error;
+      return res.json({
+        "data": "Unable to provide the hints"
+      })
     })
     .finally(() => {
       return res.json({
@@ -81,7 +82,11 @@ answer.post('/getAnswerByDetails', async (req, res) => {
         {
           "parts": [
             {
-              "text": `Provide me the answer for following DSA problem ${questionDetails.details}. Provide detailed answer along with java code. Answer from brute force approach to optimal approach. Strictly format the output as json`
+              "text": `Act as a DSA mentor and provide me answer for following question ${questionDetails.details}. Provide 2 answers from brute force solution to optimal solution. The first answer should be brute force and the second one should be the most optimal solution. Answer in detail. Strictly do not answer markdown . Answer only in following template
+              {
+                "answer1": "",
+                "answer2": "",
+              }`
             }
           ]
         }
@@ -98,29 +103,38 @@ answer.post('/getAnswerByDetails', async (req, res) => {
       data : data
     };
 
-    let ans = "";
+    let answers = [];
     
     axios.request(config)
     .then((response) => {
-      // console.log(response);
-      const answer = response.data.candidates[0].content.parts[0].text;
-      ans = JSON.stringify(answer);
-      // console.log(ans);
+      if (response.data.candidates[0].content.parts[0].text){
+        // console.log(response.data.candidates[0].content.parts[0].text);
+        const allAnswers = JSON.parse(response.data.candidates[0].content.parts[0].text);
+        // console.log(allAnswers.answer1);
+        // console.log(allAnswers.answer2);
+        // console.log(allAnswers);
+        answers.push(allAnswers.answer1);
+        answers.push(allAnswers.answer2);
+      } else {
+        throw Error;
+      }
     })
     .catch((error) => {
       console.log(error);
-      throw Error;
+      return res.json({
+        "data": "Unable to provide the answers"
+      })
     })
     .finally(() => {
       return res.json({
-        "data": ans
+        "data": answers
       })
     })
 
   } catch (error) {
     console.log(error);
     return res.json({
-      "data": "Unable to provide the hints"
+      "data": "Unable to provide the answers"
     })
   }
 })

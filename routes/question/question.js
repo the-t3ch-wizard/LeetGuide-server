@@ -35,7 +35,7 @@ question.get('/getQuestionDetailBySlug/:slug', async (req, res) => {
     .then((response) => {
       details = JSON.stringify(response.data.data.question.content);
       // details = parseDetails(details);
-      console.log(details);
+      // console.log(details, "done detail");
     })
     .catch((error) => {
       console.log(error);
