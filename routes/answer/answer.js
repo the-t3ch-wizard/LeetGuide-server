@@ -105,7 +105,7 @@ answer.post('/getAnswerByDetails', async (req, res) => {
     axios.request(config)
     .then( async (response) => {
       if (response.data.candidates[0].content.parts[0].text){
-        answer = response.data.candidates[0].content.parts[0].text
+        answer = await response.data.candidates[0].content.parts[0].text
       } else {
         throw Error;
       }
