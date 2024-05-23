@@ -42,9 +42,10 @@ answer.post('/getHintsByDetails', async (req, res) => {
     let hints = [];
     
     axios.request(config)
-    .then((response) => {
+    .then( async (response) => {
+      console.log(response.data.candidates[0].content.parts[0].text);
       if (response.data.candidates[0].content.parts[0].text){
-        const allHints = JSON.parse(response.data.candidates[0].content.parts[0].text);
+        const allHints = await JSON.parse(response.data.candidates[0].content.parts[0].text);
         hints.push(allHints.hint1)
         hints.push(allHints.hint2)
         hints.push(allHints.hint3)
@@ -82,11 +83,7 @@ answer.post('/getAnswerByDetails', async (req, res) => {
         {
           "parts": [
             {
-              "text": `Act as a DSA mentor and provide me answer for following question ${questionDetails.details}. Provide 2 answers from brute force solution to optimal solution. The first answer should be brute force and the second one should be the most optimal solution. Answer in detail. Strictly do not answer markdown . Answer only in following template
-              {
-                "answer1": "",
-                "answer2": "",
-              }`
+              "text": `Act as a DSA mentor and provide me answer for following question ${questionDetails.details}. Provide 2 answers brute force answer and optimal answer. The first answer should be brute force and the second one should be the most optimal solution. Answer in detail and provide the code in java.`
             }
           ]
         }
@@ -103,18 +100,12 @@ answer.post('/getAnswerByDetails', async (req, res) => {
       data : data
     };
 
-    let answers = [];
+    let answer = "";
     
     axios.request(config)
-    .then((response) => {
+    .then( async (response) => {
       if (response.data.candidates[0].content.parts[0].text){
-        // console.log(response.data.candidates[0].content.parts[0].text);
-        const allAnswers = JSON.parse(response.data.candidates[0].content.parts[0].text);
-        // console.log(allAnswers.answer1);
-        // console.log(allAnswers.answer2);
-        // console.log(allAnswers);
-        answers.push(allAnswers.answer1);
-        answers.push(allAnswers.answer2);
+        answer = response.data.candidates[0].content.parts[0].text
       } else {
         throw Error;
       }
@@ -126,9 +117,7 @@ answer.post('/getAnswerByDetails', async (req, res) => {
       })
     })
     .finally(() => {
-      return res.json({
-        "data": answers
-      })
+      return res.send(answer);
     })
 
   } catch (error) {
