@@ -9,7 +9,7 @@ const apiKey = process.env.API_KEY;
 
 answer.post('/getHintsByDetails', async (req, res) => {
   try {
-
+    console.log('post - getHintsByDetails');
     const questionDetails = req.body;
     
     let data = JSON.stringify({
