@@ -13,7 +13,7 @@ Inorder to run the server, run following command:
 ```
 npx nodemon
 ```
-Frontend of Leetguide:
+Client-side of Leetguide:
 https://github.com/the-t3ch-wizard/LeetGuide
 
 Preview of the Leetguide: 
